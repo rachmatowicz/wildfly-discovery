@@ -49,6 +49,7 @@ public final class Discovery implements Contextual<Discovery> {
 
     static {
         CONTEXT_MANAGER = new ContextManager<Discovery>(Discovery.class, "org.wildfly.discovery");
+        System.out.println("Discovery: static init with provider " + ConfiguredProvider.INSTANCE);
         CONTEXT_MANAGER.setGlobalDefaultSupplier(() -> create(ConfiguredProvider.INSTANCE));
     }
 
@@ -88,6 +89,7 @@ public final class Discovery implements Contextual<Discovery> {
      * @return the services queue
      */
     public ServicesQueue discover(ServiceType serviceType, FilterSpec filterSpec) {
+        System.out.println("Discovery: calling discover(" + serviceType + "," + filterSpec + ") and provider " + provider.getClass().getName() );
         Assert.checkNotNullParam("serviceType", serviceType);
         final LinkedBlockingQueue<ServiceURL> queue = new LinkedBlockingQueue<>();
         final CopyOnWriteArrayList<Throwable> problems = new CopyOnWriteArrayList<>();

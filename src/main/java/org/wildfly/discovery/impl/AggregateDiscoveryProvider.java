@@ -45,18 +45,22 @@ public final class AggregateDiscoveryProvider implements DiscoveryProvider {
      * @param delegates the array of delegates (must not be {@code null})
      */
     public AggregateDiscoveryProvider(final DiscoveryProvider[] delegates) {
+        System.out.println("AggregateDiscoveryProvider: init");
         Assert.checkNotNullParam("delegates", delegates);
         this.delegates = delegates;
     }
 
     public DiscoveryRequest discover(final ServiceType serviceType, final FilterSpec filterSpec, final DiscoveryResult result) {
+        System.out.println("AggregateDiscoveryProvider: calling discover: serviceType = " + serviceType + ", filterSpec = " + (filterSpec == null ? "null" : filterSpec.toString()));
         final AtomicInteger count = new AtomicInteger(delegates.length);
         final DiscoveryRequest[] delegateRequests = new DiscoveryRequest[delegates.length];
         for (int i = 0, delegatesLength = delegates.length; i < delegatesLength; i++) {
             final DiscoveryProvider delegate = delegates[i];
             if (delegate != null) {
+                System.out.println("AggregateDiscoveryProvider: calling delegate " + delegate.getClass().getName());
                 delegateRequests[i] = delegate.discover(serviceType, filterSpec, new AggregatingDiscoveryResult(result, count));
             } else {
+                System.out.println("AggregateDiscoveryProvider: delegate == null, calling complete ");
                 handleComplete(count, result);
             }
         }

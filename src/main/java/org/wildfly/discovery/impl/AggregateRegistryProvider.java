@@ -42,6 +42,7 @@ public final class AggregateRegistryProvider implements RegistryProvider {
     }
 
     public ServiceRegistration registerService(final ServiceURL serviceURL) {
+        System.out.println("AggregateRegistryProvider: registerService: serviceURL = " + serviceURL);
         Assert.checkNotNullParam("serviceURL", serviceURL);
         final ServiceRegistration[] array = new ServiceRegistration[delegates.length];
         final RegistryProvider[] delegates = this.delegates;
@@ -53,6 +54,7 @@ public final class AggregateRegistryProvider implements RegistryProvider {
 
     public ServiceRegistration registerServices(final ServiceURL... serviceURLs) {
         Assert.checkNotNullParam("serviceURLs", serviceURLs);
+        System.out.println("AggregateRegistryProvider: registerServices: serviceURLs = " + serviceURLs.toString());
         final ServiceRegistration[] array = new ServiceRegistration[delegates.length];
         final RegistryProvider[] delegates = this.delegates;
         for (int i = 0, delegatesLength = delegates.length; i < delegatesLength; i++) {

@@ -29,19 +29,23 @@ final class ConfiguredProvider implements DiscoveryProvider, RegistryProvider {
     private final RegistryProvider delegateRegistryProvider;
 
     ConfiguredProvider(final DiscoveryProvider delegateDiscoveryProvider, final RegistryProvider delegateRegistryProvider) {
+        System.out.println("ConfiguredProvider: constructor called");
         this.delegateDiscoveryProvider = delegateDiscoveryProvider;
         this.delegateRegistryProvider = delegateRegistryProvider;
     }
 
     public ServiceRegistration registerServices(final ServiceURL... serviceURLs) {
+        System.out.println("ConfiguredProvider: registerService: serviceURLs = " + serviceURLs.toString());
         return delegateRegistryProvider.registerServices(serviceURLs);
     }
 
     public ServiceRegistration registerService(final ServiceURL serviceURL) {
+        System.out.println("ConfiguredProvider: registerService: serviceURL = " + serviceURL);
         return delegateRegistryProvider.registerService(serviceURL);
     }
 
     public DiscoveryRequest discover(final ServiceType serviceType, final FilterSpec filterSpec, final DiscoveryResult result) {
+        System.out.println("ConfiguredProvider: calling discover() with delegate discover provider: " + delegateDiscoveryProvider.getClass().getName());
         return delegateDiscoveryProvider.discover(serviceType, filterSpec, result);
     }
 

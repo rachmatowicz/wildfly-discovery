@@ -46,6 +46,7 @@ public final class LocalRegistryAndDiscoveryProvider implements RegistryProvider
     private final CopyOnWriteArrayList<Handle> handles = new CopyOnWriteArrayList<>();
 
     public ServiceRegistration registerService(final ServiceURL serviceURL) {
+        System.out.println("LocalRegistryAndDiscoveryProvider: registerService: url = " + serviceURL.toString() + ",provider instance = " + this);
         Assert.checkNotNullParam("serviceURL", serviceURL);
         final Handle handle = new Handle(serviceURL, true);
         handles.add(handle);
@@ -55,7 +56,9 @@ public final class LocalRegistryAndDiscoveryProvider implements RegistryProvider
     public ServiceRegistration registerServices(final ServiceURL... serviceURLs) {
         Assert.checkNotNullParam("serviceURLs", serviceURLs);
         Handle[] array = new Handle[serviceURLs.length];
+        System.out.println("LocalRegistryAndDiscoveryProvider: registerServices");
         for (int i = 0; i < serviceURLs.length; i++) {
+            System.out.println("LocalRegistryAndDiscoveryProvider: registerService: url = " + serviceURLs[i].toString() + ",provider instance = " + this);
             final ServiceURL serviceURL = serviceURLs[i];
             array[i] = new Handle(serviceURL, false);
         }
@@ -66,16 +69,20 @@ public final class LocalRegistryAndDiscoveryProvider implements RegistryProvider
 
     public DiscoveryRequest discover(final ServiceType serviceType, final FilterSpec filterSpec, final DiscoveryResult result) {
         ServiceURL serviceURL;
+        String filterSpecString = filterSpec == null ? "null" : filterSpec.toString();
+        System.out.println("LocalRegistryAndDiscoveryProvider: calling discover: serviceType = " + serviceType + ", filter spec = " + filterSpecString + ",provider instance = " + this);
         for (Handle handle : handles) {
             if (! handle.isOpenAndActive()) {
                 continue;
             }
             serviceURL = handle.getServiceURL();
             if (serviceType.implies(serviceURL) && serviceURL.satisfies(filterSpec)) {
+                System.out.println("LocalRegistryAndDiscoveryProvider: found match " + serviceURL);
                 result.addMatch(serviceURL);
             }
         }
         result.complete();
+        System.out.println("LocalRegistryAndDiscoveryProvider: called discover(): matches are listed above ^^^:");
         return DiscoveryRequest.NULL;
     }
 

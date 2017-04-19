@@ -57,6 +57,7 @@ final class DiscoveryXmlParser {
     static final String NS_DISCOVERY_1_0 = "urn:wildfly-discovery:1.0";
 
     static ConfiguredProvider getConfiguredProvider() {
+        System.out.println("DiscoveryXmlParser: calling getConfiguredProvider");
         List<DiscoveryProvider> discoveryProviders = new ArrayList<>();
         List<RegistryProvider> registryProviders = new ArrayList<>();
         final ClientConfiguration clientConfiguration = ClientConfiguration.getInstance();
@@ -66,32 +67,41 @@ final class DiscoveryXmlParser {
             throw new InvalidDiscoveryConfigurationException(e);
         }
         ServiceLoader<ExternalDiscoveryConfigurator> loader = ServiceLoader.load(ExternalDiscoveryConfigurator.class);
+        System.out.println("DiscoveryXmlParser: loading external configurators:");
         final Iterator<ExternalDiscoveryConfigurator> iterator = loader.iterator();
         for (;;) try {
             if (! iterator.hasNext()) break;
             final ExternalDiscoveryConfigurator configurator = iterator.next();
+            System.out.println("DiscoveryXmlParser: processing external configurator: " + configurator.getClass().getCanonicalName());
             configurator.configure(
                 provider -> discoveryProviders.add(Assert.checkNotNullParam("provider", provider)),
                 provider -> registryProviders.add(Assert.checkNotNullParam("provider", provider))
             );
         } catch (ServiceConfigurationError | RuntimeException e) {
+            System.out.println("DiscoveryXmlParser: got exception: e = " + e.getMessage());
             // TODO log & continue
         }
 
         final DiscoveryProvider discoveryProvider;
         if (discoveryProviders.isEmpty()) {
+            System.out.println("DiscoveryXmlParser: setting discovery provider = EMPTY");
             discoveryProvider = DiscoveryProvider.EMPTY;
         } else if (discoveryProviders.size() == 1) {
+            System.out.println("DiscoveryXmlParser: setting single discovery provider = " + discoveryProviders.get(0).getClass().getCanonicalName());
             discoveryProvider = discoveryProviders.get(0);
         } else {
+            System.out.println("DiscoveryXmlParser: setting aggregate discovery provider = ");
             discoveryProvider = new AggregateDiscoveryProvider(discoveryProviders.toArray(NO_DISCOVERY_PROVIDERS));
         }
         final RegistryProvider registryProvider;
         if (registryProviders.isEmpty()) {
+            System.out.println("DiscoveryXmlParser: setting registry provider = EMPTY");
             registryProvider = RegistryProvider.EMPTY;
         } else if (registryProviders.size() == 1) {
+            System.out.println("DiscoveryXmlParser: setting registry provider = " + registryProviders.get(0).getClass().getName());
             registryProvider = registryProviders.get(0);
         } else {
+            System.out.println("DiscoveryXmlParser: setting aggregate registry provider = ");
             registryProvider = new AggregateRegistryProvider(registryProviders.toArray(NO_REGISTRY_PROVIDERS));
         }
         return new ConfiguredProvider(discoveryProvider, registryProvider);

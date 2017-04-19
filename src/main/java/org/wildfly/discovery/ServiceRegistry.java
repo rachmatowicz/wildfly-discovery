@@ -86,6 +86,8 @@ public final class ServiceRegistry implements Contextual<ServiceRegistry> {
      * @return the registration handle (not {@code null})
      */
     public ServiceRegistration registerService(ServiceURL serviceURL) {
+        //System.out.println("ServiceRegistry: registering serviceURL: " + serviceURL.toString() + " with provider " + registryProvider);
+        //Thread.dumpStack();
         Assert.checkNotNullParam("serviceURL", serviceURL);
         return registryProvider.registerService(serviceURL);
     }
@@ -101,7 +103,10 @@ public final class ServiceRegistry implements Contextual<ServiceRegistry> {
     public ServiceRegistration registerServices(ServiceURL... serviceURLs) {
         Assert.checkNotNullParam("serviceURLs", serviceURLs);
         final int length = serviceURLs.length;
+        //System.out.println("ServiceRegistry: registering " +  length + " serviceURLs: ");
+        //Thread.dumpStack();
         for (int i = 0; i < length; i++) {
+           // System.out.println("ServiceRegistry: registering serviceURL: " + serviceURLs[i].toString() + " with provider " + registryProvider);
             Assert.checkNotNullArrayParam("serviceURLs", i, serviceURLs[i]);
         }
         return registryProvider.registerServices(serviceURLs);

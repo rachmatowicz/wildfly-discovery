@@ -52,11 +52,13 @@ public final class MutableRegistryProvider implements RegistryProvider {
 
     public ServiceRegistration registerService(final ServiceURL serviceURL) {
         Assert.checkNotNullParam("serviceURL", serviceURL);
+        System.out.println("MutableRegistryProvider: registerService: serviceURL = " + serviceURL);
         return delegateRef.get().registerService(serviceURL);
     }
 
     public ServiceRegistration registerServices(final ServiceURL... serviceURLs) {
         Assert.checkNotNullParam("serviceURLs", serviceURLs);
+        System.out.println("MutableRegistryProvider: registerService: serviceURLs = " + serviceURLs.toString());
         return delegateRef.get().registerServices(serviceURLs);
     }
 
