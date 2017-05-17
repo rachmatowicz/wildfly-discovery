@@ -20,6 +20,7 @@ package org.wildfly.discovery.impl;
 
 import java.util.List;
 
+import org.jboss.logging.Logger;
 import org.wildfly.discovery.FilterSpec;
 import org.wildfly.discovery.ServiceType;
 import org.wildfly.discovery.ServiceURL;
@@ -33,6 +34,7 @@ import org.wildfly.discovery.spi.DiscoveryResult;
  * @author <a href="mailto:david.lloyd@redhat.com">David M. Lloyd</a>
  */
 public final class StaticDiscoveryProvider implements DiscoveryProvider {
+    private static Logger log = Logger.getLogger("org.wildfly.discovery");
     private final List<ServiceURL> services;
 
     /**
@@ -46,14 +48,23 @@ public final class StaticDiscoveryProvider implements DiscoveryProvider {
 
     @Override
     public DiscoveryRequest discover(final ServiceType serviceType, final FilterSpec filterSpec, final DiscoveryResult result) {
+        if (log.isDebugEnabled()) {
+            log.debug("calling discover(" + (filterSpec == null ? "null" : filterSpec) + ") on static provider:");
+        }
         try {
             for (ServiceURL service : services) {
                 if (serviceType.implies(service) && (filterSpec == null || service.satisfies(filterSpec))) {
+                    if (log.isDebugEnabled()) {
+                        log.debug("discovered ServiceURL: " + service.toString());
+                    }
                     result.addMatch(service);
                 }
             }
             return DiscoveryRequest.NULL;
         } finally {
+            if (log.isDebugEnabled()) {
+                log.debug("called discover(" + (filterSpec == null ? "null" : filterSpec) + ") on static provider:");
+            }
             result.complete();
         }
     }
