@@ -74,7 +74,7 @@ public final class LocalRegistryAndDiscoveryProvider implements RegistryProvider
     public DiscoveryRequest discover(final ServiceType serviceType, final FilterSpec filterSpec, final DiscoveryResult result) {
         ServiceURL serviceURL;
         if (log.isDebugEnabled()) {
-            log.debug("calling discover(" + (filterSpec == null ? "null" : filterSpec) + "):");
+            log.debug("calling discover(" + (filterSpec == null ? "null" : filterSpec) + ") on local registry:");
         }
         for (Handle handle : handles) {
             if (! handle.isOpenAndActive()) {
@@ -89,6 +89,9 @@ public final class LocalRegistryAndDiscoveryProvider implements RegistryProvider
             }
         }
         result.complete();
+        if (log.isDebugEnabled()) {
+            log.debug("called discover(" + (filterSpec == null ? "null" : filterSpec) + ") on local registry:");
+        }
         return DiscoveryRequest.NULL;
     }
 
