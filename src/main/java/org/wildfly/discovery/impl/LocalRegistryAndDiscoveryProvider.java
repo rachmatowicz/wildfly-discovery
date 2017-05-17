@@ -25,6 +25,7 @@ import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
 import java.util.concurrent.atomic.AtomicInteger;
 
+import org.jboss.logging.Logger;
 import org.wildfly.common.Assert;
 import org.wildfly.discovery.AggregateServiceRegistration;
 import org.wildfly.discovery.FilterSpec;
@@ -43,12 +44,18 @@ import org.wildfly.discovery.spi.RegistryProvider;
  * @author <a href="mailto:david.lloyd@redhat.com">David M. Lloyd</a>
  */
 public final class LocalRegistryAndDiscoveryProvider implements RegistryProvider, DiscoveryProvider {
+
+    private static Logger log = Logger.getLogger("org.wildfly.discovery");
+
     private final CopyOnWriteArrayList<Handle> handles = new CopyOnWriteArrayList<>();
 
     public ServiceRegistration registerService(final ServiceURL serviceURL) {
         Assert.checkNotNullParam("serviceURL", serviceURL);
         final Handle handle = new Handle(serviceURL, true);
         handles.add(handle);
+        if (log.isDebugEnabled()) {
+            log.debug("registered ServiceURL: " + serviceURL);
+        }
         return handle;
     }
 
@@ -66,12 +73,18 @@ public final class LocalRegistryAndDiscoveryProvider implements RegistryProvider
 
     public DiscoveryRequest discover(final ServiceType serviceType, final FilterSpec filterSpec, final DiscoveryResult result) {
         ServiceURL serviceURL;
+        if (log.isDebugEnabled()) {
+            log.debug("calling discover(" + (filterSpec == null ? "null" : filterSpec) + "):");
+        }
         for (Handle handle : handles) {
             if (! handle.isOpenAndActive()) {
                 continue;
             }
             serviceURL = handle.getServiceURL();
             if (serviceType.implies(serviceURL) && serviceURL.satisfies(filterSpec)) {
+                if (log.isDebugEnabled()) {
+                    log.debug("discovered ServiceURL: " + serviceURL);
+                }
                 result.addMatch(serviceURL);
             }
         }
